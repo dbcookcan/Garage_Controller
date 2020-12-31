@@ -35,7 +35,7 @@ app.config["DEBUG"] = True
 limiter = Limiter(
     app,
     key_func=get_remote_address,
-    default_limits=["2000 per day", "100 per hour"]
+    default_limits=["5000 per day", "1000 per hour"]
 )
 
 # Error Handler
@@ -77,7 +77,7 @@ def api_doorx(id):
       return jsonify(result)
       
 
-# Retrieve door #1 status
+# Retrieve PIR #1 status
 # $ curl -s https://fw-01.advan.ca/garage/pir/v1/1 | jq .triggered
 #
 @app.route('/garage/pir/v1/<int:id>', methods=['GET'])
