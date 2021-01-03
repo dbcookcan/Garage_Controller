@@ -20,22 +20,31 @@
 # $ curl https://xxxx/garage/door/status 2>/dev/null | jq .[0].status
 #
 
+# Import required modules
 import flask
 from flask import request, jsonify, make_response
-import automationhat
+import automationhat		# Pimironi AutomationHAT library
+import Adafruit_DHT as dht      # Adafruit temperature sensor
 
-# flask limiteer
+
+# flask limiter so we can throttle api hits
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
+# Define vars/constants
+DEBUG=1				# 0=OFF/1=ON
+DHT_TYPE=dht.AM2302             # DHT Sensor type
+DHT_PIN=15                      # DHT sensor GPIO pin connection
+
+
 # Configure defaults
 limiter = Limiter(
     app,
     key_func=get_remote_address,
-    default_limits=["5000 per day", "1000 per hour"]
+    default_limits=["10000 per day", "1000 per hour"]
 )
 
 # Error Handler
@@ -93,6 +102,25 @@ def api_pirx(id):
    if id == 1:
       result = {'id': 1,'triggered': pir_status}
       return jsonify(result)
+
+# Retrieve the temperature/humidity
+#
+@app.route('/garage/temp/v1', methods=['GET'])
+@limiter.limit("")
+def api_temp():
+
+   # Read the sensor
+   h,t = dht.read(DHT_TYPE, DHT_PIN)
+ 
+   # Round the result  
+   hround=round(h,1)
+   tround=round(t,1) 
+
+   if DEBUG > 0:
+      print('Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(t,h))
+
+   result = {"location": "garage", "temp": tround, "humidity": hround} 
+   return jsonify(result)
 
 
 # Run the api app
