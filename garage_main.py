@@ -19,6 +19,7 @@
 #				Add temp sensor lib
 #                               Replace all tabs for Python3 compat
 # V0.3	Oct 28/20	dbc	Fixed typos in docs
+# V0.4	Jan 05/21	dbc	Add HA push webhook
 
 # Import required modules
 import time                     # time libraries
@@ -26,6 +27,7 @@ import datetime                 # date functions
 import automationhat            # Pimironi AutomationHAT lib
 import logging                  # OS logging functions
 import os                       # OS shell functions
+#import socket			# DNS library support
 import Adafruit_DHT as dht      # Adafruit temperature sensor
 
 # Define constants
@@ -35,6 +37,9 @@ SLEEPTIME=0.1                   # loop sleep time
 DHT_TYPE=dht.AM2302             # DHT Sensor type
 DHT_PIN=15                      # DHT sensor GPIO pin connection
 MAX_LOOP=10000                  # Loop cycles to read temperature
+HA_WEBHOOK=1			# 0=no/1=yes | Add HA Webhook support
+HA_PIR_ALARM="http://192.168.0.58:8123/api/webhook/garage-pir-triggered"
+HA_PIR_CLEAR="http://192.168.0.58:8123/api/webhook/garage-pir-cleared"
 
 # Define variabltes
 lastDoorOne=0                   # last status door 1
@@ -66,16 +71,21 @@ logging.info('garage_main.py: Init Temp/Humid sensor')
 logging.info('garage_main.py: Temp %.1f *C | Humid %.1f', t,h)
 #print('Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(t,h))
 
+
 # Service Loop
 while True:
 
+    # DNS lookup - feed the cache
+    #addr1 = socket.gethostbyname('google.ca')
+    #os.system('ping -c 2 -W 1 google.ca')
+     
     # Read the temperature & humidity every 10000 cycles so it doesn't
     # waste HW cycles.
     if loopcount > MAX_LOOP :
        h,t = dht.read(DHT_TYPE, DHT_PIN)
        logging.info('garage_main.py: Temp %.1f *C | Humid %.1f', t,h)
-       loopcount=0   
-
+       loopcount=0
+       
 
     # Check if Door 1 is Open/Closed 
     # Read value into variable so we don't have to keep going
@@ -144,8 +154,15 @@ while True:
         # the status has changed = saves cycles.
         if lastPIR != currPIR :
            automationhat.output.three.off()
+           
            # Turn on relay #3
            automationhat.relay.three.on()
+           
+           # if HA, push webhook
+           if HA_WEBHOOK == 1:
+              os.system("curl -m 5 -XPOST "+HA_PIR_ALARM)
+            
+           # Save state
            lastPIR = currPIR
            logging.info('garage_main.py:   >>> PIR ALARM <<<')
            if DEBUG > 0 :
@@ -157,8 +174,15 @@ while True:
         # the status has changed = saves cycles.
         if lastPIR != currPIR :
            automationhat.output.three.on()
-	   # Turn off relay #3
+           
+	   # If HA, push webhook
+           if HA_WEBHOOK == 1:
+              os.system("curl -m 5 -XPOST "+HA_PIR_CLEAR)
+           
+           # Turn off relay #3
            automationhat.relay.three.off()
+           
+           # Save state
            lastPIR = currPIR
            logging.info('garage_main.py: PIR CLEAR (OK)')
            if DEBUG > 0 :
@@ -173,4 +197,3 @@ while True:
 #
 # EOF
 #
-
