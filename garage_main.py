@@ -27,7 +27,6 @@ import datetime                 # date functions
 import automationhat            # Pimironi AutomationHAT lib
 import logging                  # OS logging functions
 import os                       # OS shell functions
-#import socket			# DNS library support
 import Adafruit_DHT as dht      # Adafruit temperature sensor
 
 # Define constants
@@ -38,8 +37,9 @@ DHT_TYPE=dht.AM2302             # DHT Sensor type
 DHT_PIN=15                      # DHT sensor GPIO pin connection
 MAX_LOOP=10000                  # Loop cycles to read temperature
 HA_WEBHOOK=1			# 0=no/1=yes | Add HA Webhook support
-HA_PIR_ALARM="http://192.168.0.58:8123/api/webhook/garage-pir-triggered"
-HA_PIR_CLEAR="http://192.168.0.58:8123/api/webhook/garage-pir-cleared"
+HA_SERVER="http://192.168.0.58:8123"
+HA_PIR_ALARM="/api/webhook/garage-pir-triggered"
+HA_PIR_CLEAR="/api/webhook/garage-pir-cleared"
 
 # Define variabltes
 lastDoorOne=0                   # last status door 1
@@ -75,10 +75,6 @@ logging.info('garage_main.py: Temp %.1f *C | Humid %.1f', t,h)
 # Service Loop
 while True:
 
-    # DNS lookup - feed the cache
-    #addr1 = socket.gethostbyname('google.ca')
-    #os.system('ping -c 2 -W 1 google.ca')
-     
     # Read the temperature & humidity every 10000 cycles so it doesn't
     # waste HW cycles.
     if loopcount > MAX_LOOP :
@@ -160,7 +156,7 @@ while True:
            
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -m 5 -XPOST "+HA_PIR_ALARM)
+              os.system("curl -m 5 -XPOST "+HA_SERVER+HA_PIR_ALARM+" --connect-timeout 2")
             
            # Save state
            lastPIR = currPIR
@@ -177,7 +173,7 @@ while True:
            
 	   # If HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -m 5 -XPOST "+HA_PIR_CLEAR)
+              os.system("curl -m 5 -XPOST "+HA_SERVER+HA_PIR_CLEAR+" --connect-timeout 2")
            
            # Turn off relay #3
            automationhat.relay.three.off()
