@@ -40,6 +40,10 @@ HA_WEBHOOK=1			# 0=no/1=yes | Add HA Webhook support
 HA_SERVER="http://192.168.0.58:8123"
 HA_PIR_ALARM="/api/webhook/garage-pir-triggered"
 HA_PIR_CLEAR="/api/webhook/garage-pir-cleared"
+HA_LDOOR_OPEN="/api/webhook/garage-left-door-open"
+HA_LDOOR_CLOSED="/api/webhook/garage-left-door-closed"
+HA_RDOOR_OPEN="/api/webhook/garage-right-door-open"
+HA_RDOOR_CLOSED="/api/webhook/garage-right-door-closed"
 
 # Define variabltes
 lastDoorOne=0                   # last status door 1
@@ -94,6 +98,12 @@ while True:
         # the status has changed = saves cycles.
         if lastDoorOne != currDoorOne :
            automationhat.output.one.off()
+        
+           # if HA, push webhook
+           if HA_WEBHOOK == 1:
+              os.system("curl -m 5 -XPOST "+HA_SERVER+HA_LDOOR_OPEN+" --connect-timeout 2")
+            
+           # Save state 
            lastDoorOne = currDoorOne
            logging.info('garage_main.py: Door 1 OPEN')
            if DEBUG > 0 :
@@ -105,6 +115,12 @@ while True:
         # the status has changed = saves cycles.
         if lastDoorOne != currDoorOne :
            automationhat.output.one.on()
+           
+           # if HA, push webhook
+           if HA_WEBHOOK == 1:
+              os.system("curl -m 5 -XPOST "+HA_SERVER+HA_LDOOR_CLOSED+" --connect-timeout 2")
+            
+           # Save status 
            lastDoorOne = currDoorOne
            logging.info('garage_main.py: Door 1 CLOSED (OK)')
            if DEBUG > 0 :
@@ -122,6 +138,12 @@ while True:
         # the status has changed = saves cycles.
         if lastDoorTwo != currDoorTwo :
            automationhat.output.two.off()
+            
+           # if HA, push webhook
+           if HA_WEBHOOK == 1:
+              os.system("curl -m 5 -XPOST "+HA_SERVER+HA_RDOOR_OPEN+" --connect-timeout 2")
+           
+           # Save status 
            lastDoorTwo = currDoorTwo
            logging.info('garage_main.py: Door 2 OPEN')
            if DEBUG > 0 :
@@ -133,6 +155,12 @@ while True:
         # the status has changed = saves cycles.
         if lastDoorTwo != currDoorTwo :
            automationhat.output.two.on()
+           
+           # if HA, push webhook
+           if HA_WEBHOOK == 1:
+              os.system("curl -m 5 -XPOST "+HA_SERVER+HA_RDOOR_CLOSED+" --connect-timeout 2")
+            
+           # Save status
            lastDoorTwo = currDoorTwo
            logging.info('garage_main.py: Door 2 CLOSED (OK)')
            if DEBUG > 0 :

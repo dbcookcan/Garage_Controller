@@ -2,18 +2,22 @@
 # doorapi.py
 # Flask API for garage doors with smart point-of-presence
 # David Cook, 2020
+# Child program of garage_main.py
+# Provides the API services for the Rpi intelligent POP returned
+# in JSON format.
 #
-# Returns JSON format records for the door and PIR status
-# [
-#  {
-#    "id": 1,
-#    "closed": 0
-#  },
-#  {
-#    "id": 2,
-#    "closed": 0
-#  }
-# ]
+# Returns records for the garage doors and PIR motion status. Here
+# is a sample for returning both garage doors together.
+#  [
+#    {
+#      "id": 1,
+#      "closed": 0
+#    },
+#    {
+#      "id": 2,
+#      "closed": 0
+#    }
+#  ]
 #
 # Retrieving the status field of first element (0) via curl can be
 # done as follows:
