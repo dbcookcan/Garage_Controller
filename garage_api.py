@@ -48,7 +48,7 @@ DHT_PIN=15                      # DHT sensor GPIO pin connection
 limiter = Limiter(
     app,
     key_func=get_remote_address,
-    default_limits=["10000 per day", "1000 per hour"]
+    default_limits=["20000 per day", "1000 per hour"]
 )
 
 # Error Handler
@@ -59,7 +59,7 @@ def not_found(eror):
 
 # Return garage door status
 # Available externally via reverse proxy on jobs-01 that maps from
-# https/443 to http/5000 locally.
+# https/443 to http/20000 locally.
 #
 # Retrieve door #1 status
 # $ curl -s https://fw-01.advan.ca/garage/door/v1/1 | jq .closed
