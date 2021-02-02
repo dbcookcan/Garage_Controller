@@ -37,7 +37,9 @@ DHT_TYPE=dht.AM2302             # DHT Sensor type
 DHT_PIN=15                      # DHT sensor GPIO pin connection
 MAX_LOOP=10000                  # Loop cycles to read temperature
 HA_WEBHOOK=1			# 0=no/1=yes | Add HA Webhook support
-HA_SERVER="http://192.168.0.58:8123"
+# Note: For SSL you may need to change curl command to include -k
+#       if cert is self-signed or not of the same machine name.
+HA_SERVER="https://192.168.0.58:8123"
 HA_PIR_ALARM="/api/webhook/garage-pir-triggered"
 HA_PIR_CLEAR="/api/webhook/garage-pir-cleared"
 HA_LDOOR_OPEN="/api/webhook/garage-left-door-open"
@@ -101,7 +103,7 @@ while True:
         
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -m 5 -XPOST "+HA_SERVER+HA_LDOOR_OPEN+" --connect-timeout 2")
+              os.system("curl -k -m 5 -XPOST "+HA_SERVER+HA_LDOOR_OPEN+" --connect-timeout 2")
             
            # Save state 
            lastDoorOne = currDoorOne
@@ -118,7 +120,7 @@ while True:
            
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -m 5 -XPOST "+HA_SERVER+HA_LDOOR_CLOSED+" --connect-timeout 2")
+              os.system("curl -k -m 5 -XPOST "+HA_SERVER+HA_LDOOR_CLOSED+" --connect-timeout 2")
             
            # Save status 
            lastDoorOne = currDoorOne
@@ -141,7 +143,7 @@ while True:
             
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -m 5 -XPOST "+HA_SERVER+HA_RDOOR_OPEN+" --connect-timeout 2")
+              os.system("curl -k -m 5 -XPOST "+HA_SERVER+HA_RDOOR_OPEN+" --connect-timeout 2")
            
            # Save status 
            lastDoorTwo = currDoorTwo
@@ -158,7 +160,7 @@ while True:
            
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -m 5 -XPOST "+HA_SERVER+HA_RDOOR_CLOSED+" --connect-timeout 2")
+              os.system("curl -k -m 5 -XPOST "+HA_SERVER+HA_RDOOR_CLOSED+" --connect-timeout 2")
             
            # Save status
            lastDoorTwo = currDoorTwo
@@ -184,7 +186,7 @@ while True:
            
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -m 5 -XPOST "+HA_SERVER+HA_PIR_ALARM+" --connect-timeout 2")
+              os.system("curl -k -m 5 -XPOST "+HA_SERVER+HA_PIR_ALARM+" --connect-timeout 2")
             
            # Save state
            lastPIR = currPIR
@@ -201,7 +203,7 @@ while True:
            
 	   # If HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -m 5 -XPOST "+HA_SERVER+HA_PIR_CLEAR+" --connect-timeout 2")
+              os.system("curl -k -m 5 -XPOST "+HA_SERVER+HA_PIR_CLEAR+" --connect-timeout 2")
            
            # Turn off relay #3
            automationhat.relay.three.off()
