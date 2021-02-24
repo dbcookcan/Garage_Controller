@@ -34,7 +34,7 @@ import requests			# Python "curl" module
 # Define constants
 VER=0.5				# Define SW Version
 DEBUG=1                         # 0=OFF/1=ON
-API=0                           # 0=No API/1=API process running
+API=1                           # 0=No API/1=API process running
 SLEEPTIME=0.1                   # loop sleep time
 DHT_TYPE=dht.AM2302             # DHT Sensor type
 DHT_PIN=15                      # DHT sensor GPIO pin connection
