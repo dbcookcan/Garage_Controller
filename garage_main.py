@@ -20,6 +20,7 @@
 #                               Replace all tabs for Python3 compat
 # V0.3	Oct 28/20	dbc	Fixed typos in docs
 # V0.4	Jan 05/21	dbc	Add HA push webhook
+# V0.5	Feb 24/21	dbc	Swap out os.system for request calls
 
 # Import required modules
 import time                     # time libraries
@@ -28,10 +29,12 @@ import automationhat            # Pimironi AutomationHAT lib
 import logging                  # OS logging functions
 import os                       # OS shell functions
 import Adafruit_DHT as dht      # Adafruit temperature sensor
+import requests			# Python "curl" module
 
 # Define constants
+VER=0.5				# Define SW Version
 DEBUG=1                         # 0=OFF/1=ON
-API=1                           # 0=No API/1=API process running
+API=0                           # 0=No API/1=API process running
 SLEEPTIME=0.1                   # loop sleep time
 DHT_TYPE=dht.AM2302             # DHT Sensor type
 DHT_PIN=15                      # DHT sensor GPIO pin connection
@@ -55,6 +58,7 @@ currDoorTwo=0                   # current status door 2
 lastPIR=0                       # last status PIR sensor
 currPIR=0                       # current status PIR sensor
 loopcount=0                     # loop counter
+
 
 # Setup logging
 logging.basicConfig(filename='/var/log/garage.log',level=logging.DEBUG)
@@ -87,7 +91,8 @@ while True:
        h,t = dht.read(DHT_TYPE, DHT_PIN)
        logging.info('garage_main.py: Temp %.1f *C | Humid %.1f', t,h)
        loopcount=0
-       
+       snapshot = tracemalloc.take_snapshot()
+
 
     # Check if Door 1 is Open/Closed 
     # Read value into variable so we don't have to keep going
@@ -103,8 +108,8 @@ while True:
         
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -k -m 5 -XPOST "+HA_SERVER+HA_LDOOR_OPEN+" --connect-timeout 2")
-            
+              response = requests.post(HA_SERVER+HA_LDOOR_OPEN, verify=False, timeout=2)
+ 
            # Save state 
            lastDoorOne = currDoorOne
            logging.info('garage_main.py: Door 1 OPEN')
@@ -120,8 +125,8 @@ while True:
            
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -k -m 5 -XPOST "+HA_SERVER+HA_LDOOR_CLOSED+" --connect-timeout 2")
-            
+              response = requests.post(HA_SERVER+HA_LDOOR_CLOSED, verify=False, timeout=2)
+ 
            # Save status 
            lastDoorOne = currDoorOne
            logging.info('garage_main.py: Door 1 CLOSED (OK)')
@@ -143,8 +148,9 @@ while True:
             
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -k -m 5 -XPOST "+HA_SERVER+HA_RDOOR_OPEN+" --connect-timeout 2")
-           
+              response = requests.post(HA_SERVER+HA_RDOOR_OPEN, verify=False, timeout=2)
+
+ 
            # Save status 
            lastDoorTwo = currDoorTwo
            logging.info('garage_main.py: Door 2 OPEN')
@@ -160,7 +166,9 @@ while True:
            
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -k -m 5 -XPOST "+HA_SERVER+HA_RDOOR_CLOSED+" --connect-timeout 2")
+              response = requests.post(HA_SERVER+HA_RDOOR_CLOSED, verify=False, timeout=2)
+
+
             
            # Save status
            lastDoorTwo = currDoorTwo
@@ -186,7 +194,8 @@ while True:
            
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -k -m 5 -XPOST "+HA_SERVER+HA_PIR_ALARM+" --connect-timeout 2")
+              response = requests.post(HA_SERVER+HA_PIR_ALARM, verify=False, timeout=2)
+
             
            # Save state
            lastPIR = currPIR
@@ -203,7 +212,8 @@ while True:
            
 	   # If HA, push webhook
            if HA_WEBHOOK == 1:
-              os.system("curl -k -m 5 -XPOST "+HA_SERVER+HA_PIR_CLEAR+" --connect-timeout 2")
+              response = requests.post(HA_SERVER+HA_PIR_CLEAR, verify=False, timeout=2)
+
            
            # Turn off relay #3
            automationhat.relay.three.off()

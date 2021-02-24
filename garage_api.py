@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# doorapi.py
+# garage_api.py
 # Flask API for garage doors with smart point-of-presence
 # David Cook, 2020
 # Child program of garage_main.py
@@ -39,7 +39,7 @@ app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
 # Define vars/constants
-DEBUG=1				# 0=OFF/1=ON
+DEBUG=0				# 0=OFF/1=ON
 DHT_TYPE=dht.AM2302             # DHT Sensor type
 DHT_PIN=15                      # DHT sensor GPIO pin connection
 
