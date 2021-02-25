@@ -64,26 +64,26 @@ loopcount=0                     # loop counter
 # Setup logging
 logging.basicConfig(filename='/var/log/garage.log',level=logging.DEBUG)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
-logging.info('garage_main.py: ******************************')
-logging.info('garage_main.py: Version: '+str(VER))
-logging.info('garage_main.py: Requests version: '+requests.__version__+', '+requests.__copyright__)
+logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py: ******************************')
+logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py: Version: '+str(VER))
+logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py: Requests version: '+requests.__version__+', '+requests.__copyright__)
 
 
 # Launch api subprocess
 if API == 1:
-    logging.info('garage_main.py: STARTING API subprocess')
+    logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py: STARTING API subprocess')
     os.system("python3 /home/pi/Documents/Garage_Controller/garage_api.py &")
 
 
 #
 # MAIN
 
-logging.info('garage_main.py: STARTING MAIN')
+logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py: STARTING MAIN')
 
 # Initial read of the temperature and humidity
 h,t = dht.read(DHT_TYPE, DHT_PIN)
-logging.info('garage_main.py: Init Temp/Humid sensor')
-logging.info('garage_main.py: Temp %.1f *C | Humid %.1f', t,h)
+logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py: Init Temp/Humid sensor')
+logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py: Temp %.1f *C | Humid %.1f', t,h)
 #print('Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(t,h))
 
 #
@@ -97,7 +97,7 @@ while True:
     # waste HW cycles.
     if loopcount > MAX_LOOP :
        h,t = dht.read(DHT_TYPE, DHT_PIN)
-       logging.info('garage_main.py: Temp %.1f *C | Humid %.1f', t,h)
+       logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py: Temp %.1f *C | Humid %.1f', t,h)
        loopcount=0
 
 
@@ -119,7 +119,7 @@ while True:
  
            # Save state 
            lastDoorOne = currDoorOne
-           logging.info('garage_main.py: Door 1 OPEN')
+           logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py: Door 1 OPEN')
            if DEBUG > 0 :
               print(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") + " - Door 1 is OPEN")
 
@@ -136,7 +136,7 @@ while True:
  
            # Save status 
            lastDoorOne = currDoorOne
-           logging.info('garage_main.py: Door 1 CLOSED (OK)')
+           logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py: Door 1 CLOSED (OK)')
            if DEBUG > 0 :
               print(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") + " - Door 1 is CLOSED (OK)")
 
@@ -160,7 +160,7 @@ while True:
  
            # Save status 
            lastDoorTwo = currDoorTwo
-           logging.info('garage_main.py: Door 2 OPEN')
+           logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py: Door 2 OPEN')
            if DEBUG > 0 :
               print(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") + " - Door 2 is OPEN")
 
@@ -179,7 +179,7 @@ while True:
             
            # Save status
            lastDoorTwo = currDoorTwo
-           logging.info('garage_main.py: Door 2 CLOSED (OK)')
+           logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py: Door 2 CLOSED (OK)')
            if DEBUG > 0 :
               print(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") + " - Door 2 is CLOSED (OK)")
 
@@ -206,7 +206,7 @@ while True:
             
            # Save state
            lastPIR = currPIR
-           logging.info('garage_main.py:   >>> PIR ALARM <<<')
+           logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py:   >>> PIR ALARM <<<')
            if DEBUG > 0 :
               print(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") + " -   >>> PIR ALARM <<<")
 
@@ -227,7 +227,7 @@ while True:
            
            # Save state
            lastPIR = currPIR
-           logging.info('garage_main.py: PIR CLEAR (OK)')
+           logging.info(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") +' garage_main.py: PIR CLEAR (OK)')
            if DEBUG > 0 :
               print(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") + " - PIR CLEAR (OK)")
 
