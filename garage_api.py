@@ -29,6 +29,7 @@ import flask
 from flask import request, jsonify, make_response
 import automationhat		# Pimironi AutomationHAT library
 import Adafruit_DHT as dht      # Adafruit temperature sensor
+import gc			# Garbage collection
 
 
 # flask limiter so we can throttle api hits
@@ -36,7 +37,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+app.config["DEBUG"] = False
 
 # Define vars/constants
 DEBUG=0				# 0=OFF/1=ON
@@ -68,6 +69,7 @@ def not_found(eror):
 @limiter.limit("")
 def api_doorx(id):
 
+   gc.collect()
    # All doors
    if id == 0:
       tmp = []
@@ -97,6 +99,7 @@ def api_doorx(id):
 @limiter.limit("")
 def api_pirx(id):
 
+   gc.collect()
    # Retreive the PIR status
    pir_status=not bool(automationhat.input.three.read())
    if id == 0:
@@ -113,6 +116,7 @@ def api_pirx(id):
 @limiter.limit("")
 def api_temp():
 
+   gc.collect()
    # Read the sensor
    h,t = dht.read(DHT_TYPE, DHT_PIN)
  
