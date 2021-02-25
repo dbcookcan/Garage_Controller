@@ -63,6 +63,7 @@ loopcount=0                     # loop counter
 
 # Setup logging
 logging.basicConfig(filename='/var/log/garage.log',level=logging.DEBUG)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.info('garage_main.py: ******************************')
 logging.info('garage_main.py: Version: '+str(VER))
 logging.info('garage_main.py: Requests version: '+requests.__version__+', '+requests.__copyright__)
