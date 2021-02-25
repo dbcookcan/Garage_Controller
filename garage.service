@@ -1,0 +1,15 @@
+[Unit]
+Description=Garage
+After=network.target
+
+[Service]
+ExecStartPre=touch /var/log/garage.log
+ExecStart=/usr/bin/python3 -u /home/pi/Documents/Garage_Controller/garage_main.py
+WorkingDirectory=/home/pi/Documents/Garage_Controller
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
