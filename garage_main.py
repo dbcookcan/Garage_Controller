@@ -30,6 +30,7 @@ import logging                  # OS logging functions
 import os                       # OS shell functions
 import Adafruit_DHT as dht      # Adafruit temperature sensor
 import requests			# Python "curl" module
+import urllib3			# To disable SSL self-signed cert warnings
 
 # Define constants
 VER=0.5				# Define SW Version
@@ -63,7 +64,8 @@ loopcount=0                     # loop counter
 # Setup logging
 logging.basicConfig(filename='/var/log/garage.log',level=logging.DEBUG)
 logging.info('garage_main.py: ******************************')
-logging.info('garage_main.py: STARTING MAIN')
+logging.info('garage_main.py: Version: '+str(VER))
+logging.info('garage_main.py: Requests version: '+requests.__version__+', '+requests.__copyright__)
 
 
 # Launch api subprocess
@@ -75,12 +77,17 @@ if API == 1:
 #
 # MAIN
 
+logging.info('garage_main.py: STARTING MAIN')
+
 # Initial read of the temperature and humidity
 h,t = dht.read(DHT_TYPE, DHT_PIN)
 logging.info('garage_main.py: Init Temp/Humid sensor')
 logging.info('garage_main.py: Temp %.1f *C | Humid %.1f', t,h)
 #print('Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(t,h))
 
+#
+# Disable Self-Signed cert warnings
+urllib3.disable_warnings()
 
 # Service Loop
 while True:
@@ -91,7 +98,6 @@ while True:
        h,t = dht.read(DHT_TYPE, DHT_PIN)
        logging.info('garage_main.py: Temp %.1f *C | Humid %.1f', t,h)
        loopcount=0
-       snapshot = tracemalloc.take_snapshot()
 
 
     # Check if Door 1 is Open/Closed 
