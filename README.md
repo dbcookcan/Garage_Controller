@@ -18,6 +18,8 @@ Flask framework API for controller
 - Allows remote polling of garage door and PIR status
 - Default operation on port 5000
 
+Copy secure_vars.py.sample to secure_vars.py and update the variables as needed for your Home Assistant integration.
+
 Install the Systemd service file
 - sudo cp garage.service /etc/systemd/system/garage.service
 - sudo systemctl daemon-reload
