@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+# secure_vars.py
+# File for definitions of secure data that should not be packaged
+# with the software or publiclly published to repos.
+
+# David Cook, 2021
+# History
+#######################################################################
+# V0.1	Jun 22/21	dbc	Initial delivery
+
+
+# Define secure variables
+# Home Assistant Server, PIR and Garage Door api calls for binary_sensor
+# boolean values
+HA_SERVER = "https://192.168.0.123:8123"
+HA_PIR    = "/api/states/input_boolean.pir_garage"
+HA_LDOOR  = "/api/states/input_boolean.garage_left_door"
+HA_RDOOR  = "/api/states/input_boolean.garage_right_door"
+
+# Home Assistant authentication token
+# User Profile -> Long-Lived Access Tokens
+auth_token = 'eyJ0eXAiOi.eyJpxxxxxxxxxxxxxxxxxxxxxx'
+
+
+#
+# EOF
+#

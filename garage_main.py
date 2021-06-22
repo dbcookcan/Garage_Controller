@@ -21,6 +21,7 @@
 # V0.3	Oct 28/20	dbc	Fixed typos in docs
 # V0.4	Jan 05/21	dbc	Add HA push webhook
 # V0.5	Feb 24/21	dbc	Swap out os.system for request calls
+# V0.6  Jun 22/21	dbc	Rewrite HA Post code for better integration
 
 # Import required modules
 import time                     # time libraries
@@ -32,6 +33,11 @@ import Adafruit_DHT as dht      # Adafruit temperature sensor
 import requests			# Python "curl" module
 import urllib3			# To disable SSL self-signed cert warnings
 
+
+# Include vars that must be stored separately from the code.
+from secure_vars import *
+
+
 # Define constants
 VER=0.5				# Define SW Version
 DEBUG=1                         # 0=OFF/1=ON
@@ -41,22 +47,20 @@ DHT_TYPE=dht.AM2302             # DHT Sensor type
 DHT_PIN=15                      # DHT sensor GPIO pin connection
 MAX_LOOP=10000                  # Loop cycles to read temperature
 HA_WEBHOOK=1			# 0=no/1=yes | Add HA Webhook support
-# Note: For SSL you may need to change curl command to include -k
-#       if cert is self-signed or not of the same machine name.
-HA_SERVER="https://192.168.0.58:8123"
-HA_PIR_ALARM="/api/webhook/garage-pir-triggered"
-HA_PIR_CLEAR="/api/webhook/garage-pir-cleared"
-HA_LDOOR_OPEN="/api/webhook/garage-left-door-open"
-HA_LDOOR_CLOSED="/api/webhook/garage-left-door-closed"
-HA_RDOOR_OPEN="/api/webhook/garage-right-door-open"
-HA_RDOOR_CLOSED="/api/webhook/garage-right-door-closed"
 
-# Define variabltes
-lastDoorOne=0                   # last status door 1
+
+# Build header for api authorization
+myheader = { 'Authorization': 'Bearer ' + auth_token }
+
+
+# Define variables
+# Note: "Last" value should be initialized to unused numeric value so it
+# will be processed reegardless of it's current state during app launch.
+lastDoorOne=9                   # last status door 1
 currDoorOne=0                   # current status door 1
-lastDoorTwo=0                   # last status door 2
+lastDoorTwo=9                   # last status door 2
 currDoorTwo=0                   # current status door 2
-lastPIR=0                       # last status PIR sensor
+lastPIR=9                       # last status PIR sensor
 currPIR=0                       # current status PIR sensor
 loopcount=0                     # loop counter
 
@@ -93,6 +97,10 @@ urllib3.disable_warnings()
 # Service Loop
 while True:
 
+    # Debug for the main loop
+    if DEBUG > 1 :
+       print(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S") + " - MAIN LOOP EXECUTING....")
+
     # Read the temperature & humidity every 10000 cycles so it doesn't
     # waste HW cycles.
     if loopcount > MAX_LOOP :
@@ -115,7 +123,9 @@ while True:
         
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              response = requests.post(HA_SERVER+HA_LDOOR_OPEN, verify=False, timeout=2)
+              url = HA_SERVER+HA_LDOOR
+              mydata = '{ "state": "on" }'
+              response = requests.post(url, data=mydata, headers=myheader, verify=False, timeout=2)
  
            # Save state 
            lastDoorOne = currDoorOne
@@ -132,7 +142,9 @@ while True:
            
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              response = requests.post(HA_SERVER+HA_LDOOR_CLOSED, verify=False, timeout=2)
+              url = HA_SERVER+HA_LDOOR
+              mydata = '{ "state": "off" }'
+              response = requests.post(url, data=mydata, headers=myheader, verify=False, timeout=2)
  
            # Save status 
            lastDoorOne = currDoorOne
@@ -155,7 +167,9 @@ while True:
             
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              response = requests.post(HA_SERVER+HA_RDOOR_OPEN, verify=False, timeout=2)
+              url = HA_SERVER+HA_RDOOR
+              mydata = '{ "state": "on" }'
+              response = requests.post(url, data=mydata, headers=myheader, verify=False, timeout=2)
 
  
            # Save status 
@@ -173,7 +187,9 @@ while True:
            
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              response = requests.post(HA_SERVER+HA_RDOOR_CLOSED, verify=False, timeout=2)
+              url = HA_SERVER+HA_RDOOR
+              mydata = '{ "state": "off" }'
+              response = requests.post(url, data=mydata, headers=myheader, verify=False, timeout=2)
 
 
             
@@ -201,7 +217,9 @@ while True:
            
            # if HA, push webhook
            if HA_WEBHOOK == 1:
-              response = requests.post(HA_SERVER+HA_PIR_ALARM, verify=False, timeout=2)
+              url = HA_SERVER+HA_PIR
+              mydata = '{ "state": "on" }'
+              response = requests.post(url, data=mydata, headers=myheader, verify=False, timeout=2)
 
             
            # Save state
@@ -219,7 +237,9 @@ while True:
            
 	   # If HA, push webhook
            if HA_WEBHOOK == 1:
-              response = requests.post(HA_SERVER+HA_PIR_CLEAR, verify=False, timeout=2)
+              url = HA_SERVER+HA_PIR
+              mydata = '{ "state": "off" }'
+              response = requests.post(url, data=mydata, headers=myheader, verify=False, timeout=2)
 
            
            # Turn off relay #3
