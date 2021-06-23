@@ -63,7 +63,7 @@ def not_found(eror):
 # https/443 to http/20000 locally.
 #
 # Retrieve door #1 status
-# $ curl -s https://fw-01.advan.ca/garage/door/v1/1 | jq .closed
+# $ curl -s https://<server>/garage/door/v1/1 | jq .closed
 #
 @app.route('/garage/door/v1/<int:id>', methods=['GET'])
 @limiter.limit("")
@@ -93,7 +93,7 @@ def api_doorx(id):
       
 
 # Retrieve PIR #1 status
-# $ curl -s https://fw-01.advan.ca/garage/pir/v1/1 | jq .triggered
+# $ curl -s https://<server>/garage/pir/v1/1 | jq .triggered
 #
 @app.route('/garage/pir/v1/<int:id>', methods=['GET'])
 @limiter.limit("")
