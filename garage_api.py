@@ -21,7 +21,7 @@
 #
 # Retrieving the status field of first element (0) via curl can be
 # done as follows:
-# $ curl https://xxxx/garage/door/status 2>/dev/null | jq .[0].status
+# $ curl https://<server>/garage/door/status 2>/dev/null | jq .[0].status
 #
 
 # Import required modules
