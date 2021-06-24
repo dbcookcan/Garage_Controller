@@ -49,7 +49,7 @@ DHT_PIN=15                      # DHT sensor GPIO pin connection
 limiter = Limiter(
     app,
     key_func=get_remote_address,
-    default_limits=["20000 per day", "1000 per hour"]
+    default_limits=["30000 per day", "1500 per hour"]
 )
 
 # Error Handler
