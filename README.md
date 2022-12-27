@@ -1,6 +1,5 @@
 # Garage_Controller
-Github link: https://github.com/dbcookcan/Garage_Controller.git
-
+git clone https://github.com/dbcookcan/Garage_Controller.git
 This python3/Raspberry Pi program provides an inteligent garage door controller and environmental monitor.
 REQUIRES: RaspberryPi + Pimironi AutomationHat
 Autostart with systemd using the garage.service file
